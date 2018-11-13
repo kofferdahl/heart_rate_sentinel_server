@@ -4,10 +4,10 @@ import datetime as dt
 
 
 def test_create_patient():
-    P = create_patient(1, "kro18@duke.edu", 10)
+    P = create_patient("1", "kro18@duke.edu", 10)
     assert P.user_age == 10
     assert P.attending_email == "kro18@duke.edu"
-    assert P.patient_id == 1
+    assert P.patient_id == "1"
 
 
 @pytest.mark.parametrize("age, heart_rate, expected_tachycardic", [
