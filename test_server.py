@@ -1,5 +1,3 @@
-#from server import create_patient, is_tachycardic, update_heart_rate, \
-#    get_status, get_patient
 from server import *
 import pytest
 import datetime as dt

@@ -110,5 +110,3 @@ def get_interval_average_heart_rate(heart_rates,
     heart_rates_in_interval = [heart_rates[i] for i in inx_list]
 
     return mean(heart_rates_in_interval)
-
-
