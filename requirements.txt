@@ -3,3 +3,4 @@ pymodm
 pytest
 pytest-pep8
 datetime
+statistics

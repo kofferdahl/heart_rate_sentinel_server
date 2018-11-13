@@ -1,6 +1,7 @@
 from pymodm import connect
 from pymodm import MongoModel, fields
 import datetime
+from statistics import mean
 
 connect("mongodb://User:GODUKE10@ds151463.mlab.com:51463/heart-rate-sentinel")
 
@@ -88,3 +89,26 @@ def get_status(patient_id):
 def get_patient(patient_id):
     p = Patient.objects.raw({"_id": patient_id}).first()
     return p
+
+
+def get_heart_rate(patient_id):
+    p = get_patient(patient_id)
+    return p.heart_rate
+
+
+def get_average_heart_rate(heart_rates):
+    return mean(heart_rates)
+
+
+def get_interval_average_heart_rate(heart_rates,
+                                    heart_rate_times,
+                                    average_heart_rate_since):
+
+    inx_list = [inx for inx, time in enumerate(heart_rate_times) if time >=
+                average_heart_rate_since]
+
+    heart_rates_in_interval = [heart_rates[i] for i in inx_list]
+
+    return mean(heart_rates_in_interval)
+
+

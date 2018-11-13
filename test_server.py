@@ -1,5 +1,6 @@
-from server import create_patient, is_tachycardic, update_heart_rate, \
-    get_status, get_patient
+#from server import create_patient, is_tachycardic, update_heart_rate, \
+#    get_status, get_patient
+from server import *
 import pytest
 import datetime as dt
 
@@ -59,3 +60,30 @@ def test_get_status(P):
     assert output_dict["timestamp"] < dt.datetime.now()
     assert output_dict["timestamp"] > dt.datetime.now() - dt.timedelta(
         seconds=10)
+
+
+def test_get_heart_rate(P):
+    update_heart_rate(P.patient_id, 200)
+    hr = get_heart_rate(P.patient_id)
+    assert hr[-1] == 200
+
+
+def test_get_average_heart_rate():
+    heart_rates = [1, 2, 3, 4, 5]
+    mean_hr = get_average_heart_rate(heart_rates)
+    assert mean_hr == mean(heart_rates)
+
+
+def test_get_interval_heart_rate():
+    heart_rates = [1, 2, 3, 4, 5]
+    ct = dt.datetime.now()
+    heart_rate_times = [ct - dt.timedelta(seconds=20),
+                        ct - dt.timedelta(seconds=10),
+                        ct,
+                        ct + dt.timedelta(seconds=10),
+                        ct + dt.timedelta(seconds=20)]
+    int_avg_hr = get_interval_average_heart_rate(heart_rates,
+                                                 heart_rate_times, ct)
+
+    expected_int_avg = mean([3, 4, 5])
+    assert int_avg_hr == expected_int_avg
