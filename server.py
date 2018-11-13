@@ -26,7 +26,7 @@ def create_patient(patient_id, attending_email, user_age):
 
 
 class Patient(MongoModel):
-    patient_id = fields.IntegerField(primary_key=True)
+    patient_id = fields.CharField(primary_key=True)
     attending_email = fields.EmailField()
     user_age = fields.IntegerField()
     is_tachycardic = fields.ListField(field=fields.BooleanField())
