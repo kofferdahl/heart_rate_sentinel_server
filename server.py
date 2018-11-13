@@ -152,8 +152,9 @@ def interval_average():
     p = get_patient(patient_id)
     heart_rate_times = p.heart_rate_time
 
-    int_avg_hr = get_interval_average_heart_rate(heart_rates, heart_rate_times,
-                                        interval_timestamp)
+    int_avg_hr = get_interval_average_heart_rate(heart_rates,
+                                                 heart_rate_times,
+                                                 interval_timestamp)
 
     return jsonify(int_avg_hr), 200
 
