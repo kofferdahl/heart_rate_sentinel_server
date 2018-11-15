@@ -52,6 +52,15 @@ def test_is_tachycardic(age, heart_rate, expected_tachycardic):
     assert is_tachycardic(age, heart_rate) == expected_tachycardic
 
 
+@pytest.mark.parametrize("age, heart_rate", [
+    ("10", 90),
+    (10, "90")
+])
+def test_is_tachycardic_exceptions(age, heart_rate):
+    with pytest.raises(TypeError):
+        is_tachycardic(age, heart_rate)
+
+
 def test_update_heart_rate(P):
     update_heart_rate(P.patient_id, 200)
     p = get_patient(P.patient_id)

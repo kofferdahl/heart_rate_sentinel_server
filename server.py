@@ -6,10 +6,14 @@ from flask import Flask, jsonify, request
 import sendgrid
 import os
 from sendgrid.helpers.mail import *
-
+import numbers
+import logging
 
 connect("mongodb://User:GODUKE10@ds151463.mlab.com:51463/heart-rate-sentinel")
 app = Flask(__name__)
+logging.basicConfig(filename="HR_Sentinel_Server_Logs.txt",
+                    format='%(asctime)s %(levelname)s:%(message)s',
+                    datefmt='%m/%d/%Y %I:%M:%S %p')
 
 
 @app.route("/api/new_patient", methods=["POST"])
@@ -20,12 +24,21 @@ def new_patient():
         status_code (str): Status code indicating successful execution
     """
     req_data = request.get_json()
-    patient_id = req_data["patient_id"]
-    attending_email = req_data["attending_email"]
-    user_age = req_data["user_age"]
-    create_patient(patient_id, attending_email, user_age)
-    status_code = "200"
-    return status_code
+    try:
+        patient_id = req_data["patient_id"]
+        attending_email = req_data["attending_email"]
+        user_age = req_data["user_age"]
+        create_patient(patient_id, attending_email, user_age)
+        status_code = "200"
+        return status_code
+
+    except NameError:
+        print("Error: Input dictionary does not specify the correct "
+              "parameters.")
+        logging.error("Input dictionary does not specify the correct "
+                      "parameters.")
+        status_code = "400"
+        return status_code
 
 
 def create_patient(patient_id, attending_email, user_age):
@@ -76,10 +89,23 @@ def heart_rate_post_request():
         status_code (str): Status code indicating successful execution
     """
     req_data = request.get_json()
-    patient_id = req_data["patient_id"]
-    heart_rate = req_data["heart_rate"]
+    try:
+        patient_id = req_data["patient_id"]
+        heart_rate = req_data["heart_rate"]
+    except NameError:
+        print("Error: Invalid input dictionary parameters")
+        logging.error("invalid input dictionary parameters")
+        status_code = "400"
+        return status_code
 
-    update_heart_rate(patient_id, heart_rate)
+    try:
+
+        update_heart_rate(patient_id, heart_rate)
+    except ValueError:
+        print("error: invalid patient ID or heart rate")
+        logging.error("invalid patient ID or heart rate")
+        status_code = "400"
+        return status_code
     status_code = "200"
     return status_code
 
@@ -94,26 +120,38 @@ def update_heart_rate(patient_id, heart_rate):
 
     Returns: None
     """
+    try:
+        p = Patient.objects.raw({"_id": patient_id}).first()
+        if not isinstance(heart_rate, numbers.Number):
+            raise ValueError
 
-    p = Patient.objects.raw({"_id": patient_id}).first()
+        p.heart_rate.append(heart_rate)
+        hr_timestamp = datetime.datetime.now()
 
-    p.heart_rate.append(heart_rate)
-    hr_timestamp = datetime.datetime.now()
+        p.heart_rate_time.append(hr_timestamp)
 
-    p.heart_rate_time.append(hr_timestamp)
-
-    age = p.user_age
-    tachycardic = is_tachycardic(age, heart_rate)
-    if(tachycardic):
-        attending_email = str(p.attending_email)
+        age = p.user_age
         try:
-            send_tachycardic_email(patient_id, heart_rate, hr_timestamp,
-                                   attending_email)
-        except Exception:
-            print("Please Configure Sendgrid API Key")
+            tachycardic = is_tachycardic(age, heart_rate)
+            if (tachycardic):
+                attending_email = str(p.attending_email)
+                try:
+                    send_tachycardic_email(patient_id, heart_rate,
+                                           hr_timestamp,
+                                           attending_email)
 
-    p.is_tachycardic.append(tachycardic)
-    p.save()
+                except Exception:
+                    print("Please Configure Sendgrid API Key")
+                    logging.error("Sendgrid API key is not configured")
+
+            p.is_tachycardic.append(tachycardic)
+            p.save()
+        except TypeError:
+            print("Error: Non-numerical inputs for age or heart_rate")
+            logging.error("Invalid age or heart_rate input data types")
+
+    except:
+        raise ValueError
 
 
 def send_tachycardic_email(patient_id, heart_rate, hr_timestamp,
@@ -128,20 +166,24 @@ def send_tachycardic_email(patient_id, heart_rate, hr_timestamp,
 
     Returns: None
     """
+    try:
+        date = hr_timestamp.strftime("%B %d, %Y")
+        time = hr_timestamp.strftime("%H:%M")
+        sg = sendgrid.SendGridAPIClient(
+            apikey=os.environ.get('SENDGRID_API_KEY'))
+        from_email = Email("tachycardia_alert_server@bme590.com")
+        to_email = Email(attending_email)
+        subject = "Tachycardia alert for Patient ID " + patient_id
+        content = Content("text/plain",
+                          "ALERT: Patient with ID " + patient_id + " was "
+                          "tachycardic on " + date + " at " + time + " with "
+                          "heart rate of " + str(heart_rate) + " BPM.")
 
-    date = hr_timestamp.strftime("%B %d, %Y")
-    time = hr_timestamp.strftime("%H:%M")
-    sg = sendgrid.SendGridAPIClient(apikey=os.environ.get('SENDGRID_API_KEY'))
-    from_email = Email("tachycardia_alert_server@bme590.com")
-    to_email = Email(attending_email)
-    subject = "Tachycardia alert for Patient ID " + patient_id
-    content = Content("text/plain",
-                      "ALERT: Patient with ID " + patient_id + " was "
-                      "tachycardic on " + date + " at " + time + " with heart "
-                      "rate of " + str(heart_rate) + " BPM.")
-
-    mail = Mail(from_email, subject, to_email, content)
-    response = sg.client.mail.send.post(request_body=mail.get())
+        mail = Mail(from_email, subject, to_email, content)
+        response = sg.client.mail.send.post(request_body=mail.get())
+    except ValueError:
+        print("error: datetime string improperly formatted")
+        logging.error("Improperly formatted datetime string.")
 
 
 def is_tachycardic(age, heart_rate):
@@ -154,6 +196,10 @@ def is_tachycardic(age, heart_rate):
     Returns:
         Boolean that is true when patient is tachycardic
     """
+    if not isinstance(heart_rate, numbers.Number):
+        raise TypeError
+    if not isinstance(age, numbers.Number):
+        raise TypeError
 
     if age <= 2/365:
         if heart_rate > 159:
@@ -232,7 +278,7 @@ def status(patient_id):
                               assessment was made.
     """
     output_status = get_status(patient_id)
-    return jsonify(output_status)
+    return jsonify(output_status), 400
 
 
 def get_status(patient_id):
@@ -247,13 +293,15 @@ def get_status(patient_id):
                               "timestamp" indicating the time at which this
                               assessment was made.
     """
-    p = Patient.objects.raw({"_id": patient_id}).first()
-
-    output_dict = {}
-    output_dict["is_tachycardic"] = p.is_tachycardic[-1]
-    output_dict["timestamp"] = p.heart_rate_time[-1]
-
-    return output_dict
+    try:
+        p = Patient.objects.raw({"_id": patient_id}).first()
+        output_dict = {}
+        output_dict["is_tachycardic"] = p.is_tachycardic[-1]
+        output_dict["timestamp"] = p.heart_rate_time[-1]
+        return output_dict
+    except:
+        print("Invalid patient ID")
+        logging.error("Invalid patient ID.")
 
 
 def get_patient(patient_id):
@@ -346,20 +394,31 @@ def interval_average():
         int_avg_hr (float): Average heart rate over a specified interval.
     """
     req_data = request.get_json()
-    patient_id = req_data["patient_id"]
-    heart_rate_average_since = req_data["heart_rate_average_since"]
-    interval_timestamp = datetime.datetime.strptime(
-        heart_rate_average_since, '%Y-%m-%d %H:%M:%S.%f')
+    try:
+        patient_id = req_data["patient_id"]
+        heart_rate_average_since = req_data["heart_rate_average_since"]
 
-    heart_rates = get_heart_rate(patient_id)
-    p = get_patient(patient_id)
-    heart_rate_times = p.heart_rate_time
+        try:
+            interval_timestamp = datetime.datetime.strptime(
+                heart_rate_average_since, '%Y-%m-%d %H:%M:%S.%f')
+            heart_rates = get_heart_rate(patient_id)
+            p = get_patient(patient_id)
+            heart_rate_times = p.heart_rate_time
 
-    int_avg_hr = get_interval_average_heart_rate(heart_rates,
-                                                 heart_rate_times,
-                                                 interval_timestamp)
+            int_avg_hr = get_interval_average_heart_rate(heart_rates,
+                                                         heart_rate_times,
+                                                         interval_timestamp)
 
-    return jsonify(int_avg_hr), 200
+            return jsonify(int_avg_hr), 200
+        except ValueError:
+            print("Error: Improperly formatted datetime string.")
+            logging.error("Improperly formatted datetime string.")
+            return "400"
+
+    except NameError:
+        print("Error: Invalid input dictionary entries.")
+        logging.error("Invalid input dictionary entries.")
+        return "400"
 
 
 def get_interval_average_heart_rate(heart_rates,
