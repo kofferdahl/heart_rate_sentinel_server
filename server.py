@@ -140,13 +140,12 @@ def update_heart_rate(patient_id, heart_rate):
                                            hr_timestamp,
                                            attending_email)
 
-                    p.is_tachycardic.append(tachycardic)
-                    p.save()
-
                 except Exception:
                     print("Please Configure Sendgrid API Key")
                     logging.error("Sendgrid API key is not configured")
 
+            p.is_tachycardic.append(tachycardic)
+            p.save()
         except TypeError:
             print("Error: Non-numerical inputs for age or heart_rate")
             logging.error("Invalid age or heart_rate input data types")
