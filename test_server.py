@@ -11,8 +11,18 @@ def test_create_patient():
 
 
 @pytest.mark.parametrize("age, heart_rate, expected_tachycardic", [
-    (0, 159, False),
-    (0, 160, True),
+    (2/365, 159, False),
+    (2/365, 160, True),
+    (6/365, 166, False),
+    (6/365, 167, True),
+    (3/52, 182, False),
+    (3/52, 183, True),
+    (2/12, 179, False),
+    (2/12, 180, True),
+    (5/12, 186, False),
+    (5/12, 187, True),
+    (364/365, 169, False),
+    (364/365, 170, True),
     (1, 151, False),
     (1, 152, True),
     (2, 151, False),

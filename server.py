@@ -32,7 +32,7 @@ def create_patient(patient_id, attending_email, user_age):
 class Patient(MongoModel):
     patient_id = fields.CharField(primary_key=True)
     attending_email = fields.EmailField()
-    user_age = fields.IntegerField()
+    user_age = fields.FloatField()
     is_tachycardic = fields.ListField(field=fields.BooleanField())
     heart_rate = fields.ListField(field=fields.IntegerField())
     heart_rate_time = fields.ListField(field=fields.DateTimeField())
@@ -91,11 +91,37 @@ def send_tachycardic_email(patient_id, heart_rate, hr_timestamp,
 
 def is_tachycardic(age, heart_rate):
 
-    if age < 1:
+    if age <= 2/365:
         if heart_rate > 159:
             return True
         else:
             return False
+    elif age <= 6/365:
+        if heart_rate > 166:
+            return True
+        else:
+            return False
+    elif age <= 3/52:
+        if heart_rate > 182:
+            return True
+        else:
+            return False
+    elif age <= 2/12:
+        if heart_rate > 179:
+            return True
+        else:
+            return False
+    elif age <= 5/12:
+        if heart_rate > 186:
+            return True
+        else:
+            return False
+    elif age <= 364/365:
+        if heart_rate > 169:
+            return True
+        else:
+            return False
+
     elif age <= 2:
         if heart_rate > 151:
             return True
