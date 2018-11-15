@@ -3,6 +3,10 @@ from pymodm import MongoModel, fields
 import datetime
 from statistics import mean
 from flask import Flask, jsonify, request
+import sendgrid
+import os
+from sendgrid.helpers.mail import *
+
 
 connect("mongodb://User:GODUKE10@ds151463.mlab.com:51463/heart-rate-sentinel")
 app = Flask(__name__)
@@ -15,7 +19,7 @@ def new_patient():
     attending_email = req_data["attending_email"]
     user_age = req_data["user_age"]
     create_patient(patient_id, attending_email, user_age)
-    return 200
+    return "200"
 
 
 def create_patient(patient_id, attending_email, user_age):
@@ -42,20 +46,47 @@ def heart_rate_post_request():
 
     update_heart_rate(patient_id, heart_rate)
 
-    return 200
+    return "200"
 
 
 def update_heart_rate(patient_id, heart_rate):
     p = Patient.objects.raw({"_id": patient_id}).first()
 
     p.heart_rate.append(heart_rate)
-    p.heart_rate_time.append(datetime.datetime.now())
+    hr_timestamp = datetime.datetime.now()
+
+    p.heart_rate_time.append(hr_timestamp)
 
     age = p.user_age
     tachycardic = is_tachycardic(age, heart_rate)
+    if(tachycardic):
+        attending_email = str(p.attending_email)
+        try:
+            send_tachycardic_email(patient_id, heart_rate, hr_timestamp,
+                                   attending_email)
+        except Exception:
+            print("Please Configure Sendgrid API Key")
 
     p.is_tachycardic.append(tachycardic)
     p.save()
+
+
+def send_tachycardic_email(patient_id, heart_rate, hr_timestamp,
+                           attending_email):
+
+    date = hr_timestamp.strftime("%B %d, %Y")
+    time = hr_timestamp.strftime("%H:%M")
+    sg = sendgrid.SendGridAPIClient(apikey=os.environ.get('SENDGRID_API_KEY'))
+    from_email = Email("tachycardia_alert_server@bme590.com")
+    to_email = Email(attending_email)
+    subject = "Tachycardia alert for Patient ID " + patient_id
+    content = Content("text/plain",
+                      "ALERT: Patient with ID " + patient_id + " was "
+                      "tachycardic on " + date + " at " + time + " with heart "
+                      "rate of " + str(heart_rate) + " BPM.")
+
+    mail = Mail(from_email, subject, to_email, content)
+    response = sg.client.mail.send.post(request_body=mail.get())
 
 
 def is_tachycardic(age, heart_rate):
