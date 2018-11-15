@@ -61,8 +61,11 @@ def update_heart_rate(patient_id, heart_rate):
     tachycardic = is_tachycardic(age, heart_rate)
     if(tachycardic):
         attending_email = str(p.attending_email)
-        send_tachycardic_email(patient_id, heart_rate,
-                               hr_timestamp, attending_email)
+        try:
+            send_tachycardic_email(patient_id, heart_rate, hr_timestamp,
+                                   attending_email)
+        except Exception:
+            print("Please Configure Sendgrid API Key")
 
     p.is_tachycardic.append(tachycardic)
     p.save()
