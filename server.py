@@ -6,7 +6,7 @@ from flask import Flask, jsonify, request
 import sendgrid
 import os
 from sendgrid.helpers.mail import *
-
+import numbers
 
 connect("mongodb://User:GODUKE10@ds151463.mlab.com:51463/heart-rate-sentinel")
 app = Flask(__name__)
@@ -20,9 +20,15 @@ def new_patient():
         status_code (str): Status code indicating successful execution
     """
     req_data = request.get_json()
-    patient_id = req_data["patient_id"]
-    attending_email = req_data["attending_email"]
-    user_age = req_data["user_age"]
+    try:
+        patient_id = req_data["patient_id"]
+        attending_email = req_data["attending_email"]
+        user_age = req_data["user_age"]
+    except NameError:
+        print("Error: Input dictionary does not specify the correct "
+              "parameters.")
+        status_code = "400"
+        return status_code
     create_patient(patient_id, attending_email, user_age)
     status_code = "200"
     return status_code
@@ -76,10 +82,21 @@ def heart_rate_post_request():
         status_code (str): Status code indicating successful execution
     """
     req_data = request.get_json()
-    patient_id = req_data["patient_id"]
-    heart_rate = req_data["heart_rate"]
+    try:
+        patient_id = req_data["patient_id"]
+        heart_rate = req_data["heart_rate"]
+    except NameError:
+        print("Error: Invalid input dictionary parameters")
+        status_code = "400"
+        return status_code
 
-    update_heart_rate(patient_id, heart_rate)
+    try:
+
+        update_heart_rate(patient_id, heart_rate)
+    except ValueError:
+        print("error: invalid patient ID or heart rate")
+        status_code = "400"
+        return status_code
     status_code = "200"
     return status_code
 
@@ -94,8 +111,13 @@ def update_heart_rate(patient_id, heart_rate):
 
     Returns: None
     """
+    try:
+        p = Patient.objects.raw({"_id": patient_id}).first()
+    except:
+        raise ValueError
 
-    p = Patient.objects.raw({"_id": patient_id}).first()
+    if not isinstance(heart_rate, numbers.Number):
+        raise ValueError
 
     p.heart_rate.append(heart_rate)
     hr_timestamp = datetime.datetime.now()
@@ -103,7 +125,10 @@ def update_heart_rate(patient_id, heart_rate):
     p.heart_rate_time.append(hr_timestamp)
 
     age = p.user_age
-    tachycardic = is_tachycardic(age, heart_rate)
+    try:
+        tachycardic = is_tachycardic(age, heart_rate)
+    except TypeError:
+        print("Error: Non-numerical inputs for age or heart_rate")
     if(tachycardic):
         attending_email = str(p.attending_email)
         try:
@@ -128,9 +153,12 @@ def send_tachycardic_email(patient_id, heart_rate, hr_timestamp,
 
     Returns: None
     """
+    try:
+        date = hr_timestamp.strftime("%B %d, %Y")
+        time = hr_timestamp.strftime("%H:%M")
+    except ValueError:
+        print("error: datetime string improperly formatted")
 
-    date = hr_timestamp.strftime("%B %d, %Y")
-    time = hr_timestamp.strftime("%H:%M")
     sg = sendgrid.SendGridAPIClient(apikey=os.environ.get('SENDGRID_API_KEY'))
     from_email = Email("tachycardia_alert_server@bme590.com")
     to_email = Email(attending_email)
@@ -154,6 +182,10 @@ def is_tachycardic(age, heart_rate):
     Returns:
         Boolean that is true when patient is tachycardic
     """
+    if not isinstance(heart_rate, numbers.Number):
+        raise TypeError
+    if not isinstance(age, numbers.Number):
+        raise TypeError
 
     if age <= 2/365:
         if heart_rate > 159:
@@ -232,7 +264,7 @@ def status(patient_id):
                               assessment was made.
     """
     output_status = get_status(patient_id)
-    return jsonify(output_status)
+    return jsonify(output_status), 400
 
 
 def get_status(patient_id):
@@ -247,7 +279,10 @@ def get_status(patient_id):
                               "timestamp" indicating the time at which this
                               assessment was made.
     """
-    p = Patient.objects.raw({"_id": patient_id}).first()
+    try:
+        p = Patient.objects.raw({"_id": patient_id}).first()
+    except:
+        print("Invalid patient ID")
 
     output_dict = {}
     output_dict["is_tachycardic"] = p.is_tachycardic[-1]
@@ -346,10 +381,17 @@ def interval_average():
         int_avg_hr (float): Average heart rate over a specified interval.
     """
     req_data = request.get_json()
-    patient_id = req_data["patient_id"]
-    heart_rate_average_since = req_data["heart_rate_average_since"]
-    interval_timestamp = datetime.datetime.strptime(
-        heart_rate_average_since, '%Y-%m-%d %H:%M:%S.%f')
+    try:
+        patient_id = req_data["patient_id"]
+        heart_rate_average_since = req_data["heart_rate_average_since"]
+    except NameError:
+        print("Error: Invalid input dictionary entries.")
+
+    try:
+        interval_timestamp = datetime.datetime.strptime(
+            heart_rate_average_since, '%Y-%m-%d %H:%M:%S.%f')
+    except ValueError:
+        print("Error: Improperly formatted datetime string.")
 
     heart_rates = get_heart_rate(patient_id)
     p = get_patient(patient_id)
