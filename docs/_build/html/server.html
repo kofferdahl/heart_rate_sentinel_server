@@ -1,0 +1,446 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>server module &#8212; Heart Rate Sentinel Server 2018 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-server">
+<span id="server-module"></span><h1>server module<a class="headerlink" href="#module-server" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="server.Patient">
+<em class="property">class </em><code class="descclassname">server.</code><code class="descname">Patient</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#server.Patient" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pymodm.base.models.MongoModel</span></code></p>
+<p>Patient object for the Mongo database</p>
+<dl class="docutils">
+<dt>Attributes:</dt>
+<dd><p class="first">patient_id (str): Unique ID for the patient
+attending_email (str): Email address of attending for patient
+user_age (float): Patient age
+is_tachycardiac (list): List of booleans for whether patient is</p>
+<blockquote>
+<div>tachycardic at time of receiving heart rate
+measurement</div></blockquote>
+<p>heart_rate (list): List of floats containing heart rates
+heart_rate_time (list): List of DateTime objects with heart rate</p>
+<blockquote class="last">
+<div>time stamps</div></blockquote>
+</dd>
+</dl>
+<dl class="exception">
+<dt id="server.Patient.DoesNotExist">
+<em class="property">exception </em><code class="descname">DoesNotExist</code><a class="headerlink" href="#server.Patient.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pymodm.errors.DoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="server.Patient.MultipleObjectsReturned">
+<em class="property">exception </em><code class="descname">MultipleObjectsReturned</code><a class="headerlink" href="#server.Patient.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pymodm.errors.MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="server.Patient.attending_email">
+<code class="descname">attending_email</code><a class="headerlink" href="#server.Patient.attending_email" title="Permalink to this definition">¶</a></dt>
+<dd><p>A field that stores email addresses.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="server.Patient.heart_rate">
+<code class="descname">heart_rate</code><a class="headerlink" href="#server.Patient.heart_rate" title="Permalink to this definition">¶</a></dt>
+<dd><p>A field that stores a list.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="server.Patient.heart_rate_time">
+<code class="descname">heart_rate_time</code><a class="headerlink" href="#server.Patient.heart_rate_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>A field that stores a list.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="server.Patient.is_tachycardic">
+<code class="descname">is_tachycardic</code><a class="headerlink" href="#server.Patient.is_tachycardic" title="Permalink to this definition">¶</a></dt>
+<dd><p>A field that stores a list.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="server.Patient.objects">
+<code class="descname">objects</code><a class="headerlink" href="#server.Patient.objects" title="Permalink to this definition">¶</a></dt>
+<dd><p>The default manager used for <code class="xref py py-class docutils literal notranslate"><span class="pre">MongoModel</span></code> instances.</p>
+<p>This implementation of <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseManager</span></code> uses
+<code class="xref py py-class docutils literal notranslate"><span class="pre">QuerySet</span></code> as its QuerySet class.</p>
+<p>This Manager class (accessed via the <code class="docutils literal notranslate"><span class="pre">objects</span></code> attribute on a
+<code class="xref py py-class docutils literal notranslate"><span class="pre">MongoModel</span></code>) is used by default for all MongoModel classes,
+unless another Manager instance is supplied as an attribute within the
+MongoModel definition.</p>
+<p>Managers have two primary functions:</p>
+<ol class="arabic simple">
+<li>Construct <code class="xref py py-class docutils literal notranslate"><span class="pre">QuerySet</span></code> instances for use when
+querying or working with <code class="xref py py-class docutils literal notranslate"><span class="pre">MongoModel</span></code> instances in bulk.</li>
+<li>Define collection-level functionality that can be reused across different
+MongoModel types.</li>
+</ol>
+<p>If you created a custom QuerySet that makes certain queries easier, for
+example, you will need to create a custom Manager type that returns this
+queryset using the <code class="xref py py-meth docutils literal notranslate"><span class="pre">from_queryset()</span></code>
+method:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">UserQuerySet</span><span class="p">(</span><span class="n">QuerySet</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">active</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Return only active users.&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw</span><span class="p">({</span><span class="s2">&quot;active&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>
+
+<span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">MongoModel</span><span class="p">):</span>
+    <span class="n">active</span> <span class="o">=</span> <span class="n">fields</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">()</span>
+    <span class="c1"># Add our custom Manager.</span>
+    <span class="n">users</span> <span class="o">=</span> <span class="n">Manager</span><span class="o">.</span><span class="n">from_queryset</span><span class="p">(</span><span class="n">UserQuerySet</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In the above example, we added a <cite>users</cite> attribute on <cite>User</cite> so that we can
+use the <cite>active</cite> method on our new QuerySet type:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">active_users</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">users</span><span class="o">.</span><span class="n">active</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>If we wanted every method on the QuerySet to examine active users <em>only</em>, we
+can do that by customizing the Manager itself:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">UserManager</span><span class="p">(</span><span class="n">Manager</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get_queryset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Override get_queryset, so that every QuerySet created will</span>
+        <span class="c1"># have this filter applied.</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">UserManager</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_queryset</span><span class="p">()</span><span class="o">.</span><span class="n">raw</span><span class="p">(</span>
+            <span class="p">{</span><span class="s2">&quot;active&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>
+
+<span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">MongoModel</span><span class="p">):</span>
+    <span class="n">active</span> <span class="o">=</span> <span class="n">fields</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">()</span>
+    <span class="n">users</span> <span class="o">=</span> <span class="n">UserManager</span><span class="p">()</span>
+
+<span class="n">active_users</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">users</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="server.Patient.patient_id">
+<code class="descname">patient_id</code><a class="headerlink" href="#server.Patient.patient_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>A field that stores unicode strings.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="server.Patient.user_age">
+<code class="descname">user_age</code><a class="headerlink" href="#server.Patient.user_age" title="Permalink to this definition">¶</a></dt>
+<dd><p>A field that stores a Python <cite>float</cite>.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="server.average_heart_rate">
+<code class="descclassname">server.</code><code class="descname">average_heart_rate</code><span class="sig-paren">(</span><em>patient_id</em><span class="sig-paren">)</span><a class="headerlink" href="#server.average_heart_rate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handler method for managing webservice call for average heart rate</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>patient_id (str): Unique patient identification string</dd>
+<dt>Returns:</dt>
+<dd><dl class="first last docutils">
+<dt>mean_hr (float): A jsonified mean heart rate across all heart rate</dt>
+<dd>measurements</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="server.create_patient">
+<code class="descclassname">server.</code><code class="descname">create_patient</code><span class="sig-paren">(</span><em>patient_id</em>, <em>attending_email</em>, <em>user_age</em><span class="sig-paren">)</span><a class="headerlink" href="#server.create_patient" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a patient in the mongo database</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>patient_id (str): Unique ID for the patient
+attending_email (str): Email address of attending physician
+user_age (float): Age of the patient</dd>
+<dt>Returns:</dt>
+<dd>p (Patient): Patient object with specified parameters</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="server.get_average_heart_rate">
+<code class="descclassname">server.</code><code class="descname">get_average_heart_rate</code><span class="sig-paren">(</span><em>heart_rates</em><span class="sig-paren">)</span><a class="headerlink" href="#server.get_average_heart_rate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the average heart rate from a list of heart rates</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>heart_rates (list): A list of floats with all recorded heart rates</dd>
+<dt>Returns:</dt>
+<dd>mean_hr (float): The mean of all heart rates in that list</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="server.get_heart_rate">
+<code class="descclassname">server.</code><code class="descname">get_heart_rate</code><span class="sig-paren">(</span><em>patient_id</em><span class="sig-paren">)</span><a class="headerlink" href="#server.get_heart_rate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the full list of recorded patient heart rates</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>patient_id (str): Unique patient identification string</dd>
+<dt>Returns:</dt>
+<dd>heart_rates (list): A list of all recorded patient heart rates (in BPM)</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="server.get_heart_rate_data">
+<code class="descclassname">server.</code><code class="descname">get_heart_rate_data</code><span class="sig-paren">(</span><em>patient_id</em><span class="sig-paren">)</span><a class="headerlink" href="#server.get_heart_rate_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handler function for webservice call to get patient heart rate</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>patient_id (str): Unique patient identification string</dd>
+<dt>Returns:</dt>
+<dd><dl class="first last docutils">
+<dt>hr (float): A jsonified list of floats containing all patient heart</dt>
+<dd>rates</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="server.get_interval_average_heart_rate">
+<code class="descclassname">server.</code><code class="descname">get_interval_average_heart_rate</code><span class="sig-paren">(</span><em>heart_rates</em>, <em>heart_rate_times</em>, <em>average_heart_rate_since</em><span class="sig-paren">)</span><a class="headerlink" href="#server.get_interval_average_heart_rate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the average heart rate in a specified interval</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">heart_rates (list): List of all patient heart rates
+heart_rate_times (list): List of timestamps of heart rate recording</p>
+<blockquote>
+<div>times</div></blockquote>
+<dl class="last docutils">
+<dt>average_heart_rate_since: Datetime object indicating the last heart</dt>
+<dd>rate time in the interval calculation.</dd>
+</dl>
+</dd>
+<dt>Returns:</dt>
+<dd>int_mean (float): Interval mean heart rate</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="server.get_patient">
+<code class="descclassname">server.</code><code class="descname">get_patient</code><span class="sig-paren">(</span><em>patient_id</em><span class="sig-paren">)</span><a class="headerlink" href="#server.get_patient" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets a patient object based on patient ID.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>patient_id: Unique patient identification string</dd>
+<dt>Returns:</dt>
+<dd><dl class="first last docutils">
+<dt>p (Patient): Patient object from Mongo DB database associated with</dt>
+<dd>patient ID string</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="server.get_status">
+<code class="descclassname">server.</code><code class="descname">get_status</code><span class="sig-paren">(</span><em>patient_id</em><span class="sig-paren">)</span><a class="headerlink" href="#server.get_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the tachycardic status of patient and associated time stamp</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>patient_id (str): Unique patient identification string</dd>
+<dt>Returns:</dt>
+<dd><dl class="first last docutils">
+<dt>output_status (dict): A dictionary with entries “is_tachycardic” for if</dt>
+<dd>the patient is tachycardic, and an entry
+“timestamp” indicating the time at which this
+assessment was made.</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="server.heart_rate_post_request">
+<code class="descclassname">server.</code><code class="descname">heart_rate_post_request</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#server.heart_rate_post_request" title="Permalink to this definition">¶</a></dt>
+<dd><p>handles updating the heart rate from the web service post request</p>
+<dl class="docutils">
+<dt>Returns:</dt>
+<dd>status_code (str): Status code indicating successful execution</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="server.interval_average">
+<code class="descclassname">server.</code><code class="descname">interval_average</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#server.interval_average" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handler function for webservice calling functions to get mean heart
+rate over a specified interval.</p>
+<p>interval_average takes in parameters from the webservice call, which are
+retrieved using request.get_json, which should get a dictionary
+containing the patient ID and a string specifying time period for the
+interval. Note that the heart_rate_average_since string must be in the
+format ‘%Y-%m-%d %H:%M:S.%f’</p>
+<dl class="docutils">
+<dt>Returns:</dt>
+<dd>int_avg_hr (float): Average heart rate over a specified interval.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="server.is_tachycardic">
+<code class="descclassname">server.</code><code class="descname">is_tachycardic</code><span class="sig-paren">(</span><em>age</em>, <em>heart_rate</em><span class="sig-paren">)</span><a class="headerlink" href="#server.is_tachycardic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determines whether or not a patient is tachycardic</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>age (float): Patient age
+heart_rate (float): Patient heart rate (BPM)</dd>
+<dt>Returns:</dt>
+<dd>Boolean that is true when patient is tachycardic</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="server.new_patient">
+<code class="descclassname">server.</code><code class="descname">new_patient</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#server.new_patient" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handles webservice function call for creating a new patient</p>
+<dl class="docutils">
+<dt>Returns:</dt>
+<dd>status_code (str): Status code indicating successful execution</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="server.send_tachycardic_email">
+<code class="descclassname">server.</code><code class="descname">send_tachycardic_email</code><span class="sig-paren">(</span><em>patient_id</em>, <em>heart_rate</em>, <em>hr_timestamp</em>, <em>attending_email</em><span class="sig-paren">)</span><a class="headerlink" href="#server.send_tachycardic_email" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sends email to attending physician when patient is tachycardic</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>patient_id (str): Unique patient identification string
+heart_rate (float): Patient heart rate (BPM)
+hr_timestamp (DateTime): time of heart rate measurement
+attending_email (str): Email address of attending physician</dd>
+</dl>
+<p>Returns: None</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="server.status">
+<code class="descclassname">server.</code><code class="descname">status</code><span class="sig-paren">(</span><em>patient_id</em><span class="sig-paren">)</span><a class="headerlink" href="#server.status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper function for handling webservice api call for status</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>patient_id (str): Unique patient identification string</dd>
+<dt>Returns:</dt>
+<dd><dl class="first last docutils">
+<dt>output_status (dict): A dictionary with entries “is_tachycardic” for if</dt>
+<dd>the patient is tachycardic, and an entry
+“timestamp” indicating the time at which this
+assessment was made.</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="server.update_heart_rate">
+<code class="descclassname">server.</code><code class="descname">update_heart_rate</code><span class="sig-paren">(</span><em>patient_id</em>, <em>heart_rate</em><span class="sig-paren">)</span><a class="headerlink" href="#server.update_heart_rate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates patient heart rate in webservice and iniatites sending of
+tachycardia email if tachycardic</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>patient_id (str): Unique patient identification string
+heart_rate (float): Patient heart rate in BPM</dd>
+</dl>
+<p>Returns: None</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Heart Rate Sentinel Server</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Katelyn Offerdahl.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/server.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
