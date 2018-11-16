@@ -20,6 +20,16 @@ logging.basicConfig(filename="HR_Sentinel_Server_Logs.txt",
 def new_patient():
     """Handles webservice function call for creating a new patient
 
+    This method expects there to be a json style dictionary input from the
+    post request, with fields for patient_id (unique string identifying the
+    patient), attending_email, and user_age (patient age).
+
+    Example:
+        patient_data = {"patient_id": "1", "attending_email": kro18@duke.edu,
+        "user_age": 10}
+
+        r = requests.post(ip + "/api/new_patient", json=patient_data)
+
     Returns:
         status_code (str): Status code indicating successful execution
     """
@@ -84,6 +94,13 @@ class Patient(MongoModel):
 @app.route("/api/heart_rate", methods=["POST"])
 def heart_rate_post_request():
     """handles updating the heart rate from the web service post request
+
+    This function is expecting to have a json style dictionary input in the
+    post request, with fields for patient_id and heart_rate.
+
+    Example:
+        hr_data = {"patient_id": "1", "heart_rate": 100}
+        r = requests.post(ip + "/api/heart_rate", json=hr_data)
 
     Returns:
         status_code (str): Status code indicating successful execution
@@ -268,6 +285,11 @@ def is_tachycardic(age, heart_rate):
 def status(patient_id):
     """Wrapper function for handling webservice api call for status
 
+    The webservice command is expecting a patient ID string.
+
+    Example:
+        r = requests.post(ip + "/api/status/1")
+
     Args:
         patient_id (str): Unique patient identification string
 
@@ -322,6 +344,11 @@ def get_patient(patient_id):
 def get_heart_rate_data(patient_id):
     """Handler function for webservice call to get patient heart rate
 
+    The webservice is expecting a string with the patient_id.
+
+    Example:
+        r = requests.post(ip + "/api/heart_rate/1")
+        hr = r.json # Returns a list of heart rates
     Args:
         patient_id (str): Unique patient identification string
 
@@ -351,6 +378,12 @@ def get_heart_rate(patient_id):
 @app.route("/api/heart_rate/average/<patient_id>", methods=["GET"])
 def average_heart_rate(patient_id):
     """Handler method for managing webservice call for average heart rate
+
+    This function is expecting the get request to specify a valid patient_id
+
+    Example:
+        r = request.get(ip + "/api/heart_rate/average/1"
+        avg_hr = r.json() # Average heart rate for patient 1
 
     Args:
         patient_id (str): Unique patient identification string
@@ -389,6 +422,11 @@ def interval_average():
     containing the patient ID and a string specifying time period for the
     interval. Note that the heart_rate_average_since string must be in the
     format '%Y-%m-%d %H:%M:S.%f'
+
+    Example:
+        data = {"patient_id": 1, "heart_rate_avg_since": timestamp_string}
+        r = requests.get(ip + "/api/heart_rate/interval_average", json=data)
+        int_avg = r.json() # Average heart rate since timestamp string
 
     Returns:
         int_avg_hr (float): Average heart rate over a specified interval.
