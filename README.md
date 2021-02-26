@@ -2,7 +2,7 @@
 
 ## General Usage
 The webserver address is http://vcm-7247.vm.duke.edu/5000
-~~You can confirm that the webservice is working by going to http://vcm-7247.vm.duke.edu/5000/ where you should see plain text that says "I'm working." ~~~ [The virtual machine is no longer running on Duke's servers.]
+<s>You can confirm that the webservice is working by going to http://vcm-7247.vm.duke.edu/5000/ where you should see plain text that says "I'm working."<s> [The virtual machine is no longer running on Duke's servers.]
 If the webserver is not working, the version of server.py in this repository is currently configured to run on a local machine. Simply pip install requirements.txt, and then enter `python server.py` at the command line to host the webserver locally. 
 
 ## Demo Script
